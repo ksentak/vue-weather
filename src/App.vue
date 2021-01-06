@@ -3,19 +3,36 @@
     <main>
       <!-- Search box -->
       <div class="search-box">
-        <input type="text" class="search-bar" placeholder="Search..." />
-        <button class="search-btn">
+        <input
+          type="text"
+          class="search-bar"
+          placeholder="Search for a city..."
+          v-model="searchQuery"
+          @keypress.enter="getWeather()"
+        />
+        <button class="search-btn" @click="getWeather()">
           <span class="search-btn-arrow">></span>
         </button>
       </div>
       <!-- Weather/Location box -->
-      <div class="weather">
+      <div class="weather" v-if="typeof weather.main == 'undefined'">
         <div class="location-box">
-          <div class="location">Dtown, NJ</div>
-          <div class="date">Tuesday January 5th, 2021</div>
+          <div class="location">Location</div>
+          <div class="date">{{ today }}</div>
         </div>
         <div class="weather-box">
-          <div class="temperature">10F</div>
+          <div class="temperature">Temp</div>
+          <div class="weather-status">Status</div>
+        </div>
+      </div>
+
+      <div class="weather" v-else>
+        <div class="location-box">
+          <div class="location">{{ weather.name }}, {{ weather.sys.country }}</div>
+          <div class="date">{{ today }}</div>
+        </div>
+        <div class="weather-box">
+          <div class="temperature">10°F</div>
           <div class="weather-status">Cloudy</div>
         </div>
       </div>
@@ -24,8 +41,66 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
-  name: 'App'
+  name: 'App',
+  data: () => ({
+    apiKey: process.env.VUE_APP_API_KEY,
+    urlBase: 'https://api.openweathermap.org/data/2.5/weather?q=',
+    searchQuery: '',
+    weather: {},
+    today: ''
+  }),
+  methods: {
+    async getWeather() {
+      console.log('hey');
+      try {
+        const res = await axios.get(this.urlBase + this.searchQuery + '&appid=' + this.apiKey);
+        this.weather = res.data;
+        console.log(this.weather);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    getOrdinalNumber(num) {
+      let selector;
+      if (num <= 0) {
+        selector = 4;
+      } else if ((num > 3 && num < 21) || num % 10 > 3) {
+        selector = 0;
+      } else {
+        selector = num % 10;
+      }
+      return num + ['th', 'st', 'nd', 'rd', ''][selector];
+    },
+    getDate() {
+      const d = new Date();
+      const months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ];
+      const month = months[d.getMonth()];
+      const dayWO = d.getDate();
+      const day = this.getOrdinalNumber(dayWO);
+      const year = d.getFullYear();
+
+      this.today = month + ' ' + day + ', ' + year;
+      console.log(this.today);
+    }
+  },
+  created() {
+    this.getDate();
+  }
 };
 </script>
 
@@ -84,7 +159,6 @@ main {
   display: inline-block;
   width: 5%;
   height: 60px;
-  /* padding: 15px; */
   color: #313131;
   font-size: 30px;
   border: none;
