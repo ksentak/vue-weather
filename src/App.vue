@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :class="weatherBackground">
     <main>
       <!-- Search box -->
       <div class="search-box">
@@ -32,8 +32,8 @@
           <div class="date">{{ today }}</div>
         </div>
         <div class="weather-box">
-          <div class="temperature">{{ tempF }}°F | {{ tempC }}°C</div>
-          <div class="weather-status">Cloudy</div>
+          <div class="temperature">{{ tempF }}°F {{ tempC }}°C</div>
+          <div class="weather-status">{{ weather.weather[0].main }}</div>
         </div>
       </div>
     </main>
@@ -51,15 +51,18 @@ export default {
     weather: {},
     today: '',
     tempC: 0,
-    tempF: 0
+    tempF: 0,
+    weatherBackground: 'blank'
   }),
   methods: {
     async getWeather() {
       try {
         const res = await axios.get(this.urlBase + this.searchQuery + '&appid=' + this.apiKey);
         this.weather = res.data;
+        console.log(this.weather);
         this.getTempC(this.weather.main.temp);
         this.getTempF(this.weather.main.temp);
+        this.getBackground();
       } catch (e) {
         console.log(e);
       }
@@ -71,6 +74,15 @@ export default {
     getTempC(temp) {
       const val = temp - 273.15;
       this.tempC = Math.round(val);
+    },
+    getBackground() {
+      if (this.weather.weather[0].main === 'Snow') {
+        this.weatherBackground = 'snow';
+      } else if (this.weather.weather[0].main === 'Rain') {
+        this.weatherBackground = 'rain';
+      } else if (this.weather.main.temp > 296.15) {
+        this.weatherBackground = 'warm';
+      }
     },
     getOrdinalNumber(num) {
       let selector;
@@ -139,6 +151,18 @@ body {
   background-size: cover;
   background-position: bottom;
   transition: 0.4s;
+}
+
+#app.warm {
+  background-image: url('./assets/warm-bg.jpg');
+}
+
+#app.snow {
+  background-image: url('./assets/snow-bg.jpg');
+}
+
+#app.rain {
+  background-image: url('./assets/rain-bg.png');
 }
 
 main {
@@ -240,5 +264,15 @@ main {
   font-weight: 700;
   font-style: italic;
   text-shadow: 3px 6px rgba(0, 0, 0, 0, 25);
+}
+
+@media (max-width: 768px) {
+  .search-bar {
+    width: 90%;
+  }
+
+  .search-btn {
+    width: 10%;
+  }
 }
 </style>
