@@ -3,7 +3,10 @@
     <main>
       <!-- Search box -->
       <div class="search-box">
-        <input type="text" class="search-bar" />
+        <input type="text" class="search-bar" placeholder="Search..." />
+        <button class="search-btn">
+          <span class="search-btn-arrow">></span>
+        </button>
       </div>
       <!-- Weather/Location box -->
       <div class="weather">
@@ -56,23 +59,52 @@ main {
 }
 
 .search-bar {
-  display: block;
-  width: 100%;
+  display: inline-block;
+  width: 95%;
+  height: 60px;
   padding: 15px;
   color: #313131;
-  font-size: 20px;
+  font-size: 30px;
+  font-style: italic;
   border: none;
   outline: none;
   background: none;
   box-shadow: 8px rgba(0, 0, 0, 0, 25);
   background-color: rgba(255, 255, 255, 0.5);
-  border-radius: 16px;
+  border-radius: 16px 0 0 16px;
   transition: 0.4s;
 }
 
 .search-bar:focus {
   box-shadow: 16px rgba(0, 0, 0, 0, 25);
   background-color: rgba(255, 255, 255, 0.75);
+}
+
+.search-btn {
+  display: inline-block;
+  width: 5%;
+  height: 60px;
+  /* padding: 15px; */
+  color: #313131;
+  font-size: 30px;
+  border: none;
+  outline: none;
+  background: none;
+  box-shadow: 8px rgba(0, 0, 0, 0, 25);
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 0 16px 16px 0;
+}
+
+.search-btn:hover {
+  cursor: pointer;
+}
+
+.search-btn:active {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.search-btn-arrow {
+  font-weight: 800;
 }
 
 .location {
