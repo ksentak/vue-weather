@@ -21,7 +21,7 @@
           <div class="date">{{ today }}</div>
         </div>
         <div class="weather-box">
-          <div class="temperature">Temp</div>
+          <div class="temperature">°F/°C</div>
           <div class="weather-status">Status</div>
         </div>
       </div>
@@ -32,7 +32,7 @@
           <div class="date">{{ today }}</div>
         </div>
         <div class="weather-box">
-          <div class="temperature">10°F</div>
+          <div class="temperature">{{ tempF }}°F | {{ tempC }}°C</div>
           <div class="weather-status">Cloudy</div>
         </div>
       </div>
@@ -49,18 +49,28 @@ export default {
     urlBase: 'https://api.openweathermap.org/data/2.5/weather?q=',
     searchQuery: '',
     weather: {},
-    today: ''
+    today: '',
+    tempC: 0,
+    tempF: 0
   }),
   methods: {
     async getWeather() {
-      console.log('hey');
       try {
         const res = await axios.get(this.urlBase + this.searchQuery + '&appid=' + this.apiKey);
         this.weather = res.data;
-        console.log(this.weather);
+        this.getTempC(this.weather.main.temp);
+        this.getTempF(this.weather.main.temp);
       } catch (e) {
         console.log(e);
       }
+    },
+    getTempF(temp) {
+      const val = (9 / 5) * (temp - 273.15) + 32;
+      this.tempF = Math.round(val);
+    },
+    getTempC(temp) {
+      const val = temp - 273.15;
+      this.tempC = Math.round(val);
     },
     getOrdinalNumber(num) {
       let selector;
@@ -89,13 +99,22 @@ export default {
         'November',
         'December'
       ];
+      const daysOfTheWeek = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+      ];
+      const dayOfWeek = daysOfTheWeek[d.getDay()];
       const month = months[d.getMonth()];
-      const dayWO = d.getDate();
-      const day = this.getOrdinalNumber(dayWO);
+      const dateNum = d.getDate();
+      const dateNumOrd = this.getOrdinalNumber(dateNum);
       const year = d.getFullYear();
 
-      this.today = month + ' ' + day + ', ' + year;
-      console.log(this.today);
+      this.today = dayOfWeek + ' ' + month + ' ' + dateNumOrd + ', ' + year;
     }
   },
   created() {
@@ -130,7 +149,7 @@ main {
 
 .search-box {
   width: 100%;
-  margin-bottom: 30px;
+  margin: 10px 0 30px;
 }
 
 .search-bar {
@@ -183,6 +202,7 @@ main {
 
 .location {
   color: white;
+  margin-bottom: 5px;
   font-size: 32px;
   font-weight: 500;
   text-align: center;
