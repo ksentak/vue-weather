@@ -14,7 +14,7 @@ vue-weather-01.netlify.app
 
 #### App Screenshot:
 
-![App Screenshot](./public.vue-weather.png)
+![App Screenshot](./public/vue-weather.png)
 
 ---
 
